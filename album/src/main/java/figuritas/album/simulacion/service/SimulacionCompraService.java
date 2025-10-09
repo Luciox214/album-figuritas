@@ -42,4 +42,5 @@ public class SimulacionCompraService {
         }
         return obtenidas;
     }
+
 }

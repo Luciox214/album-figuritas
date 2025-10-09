@@ -8,9 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserStickerRepository extends JpaRepository<UserSticker, Long> {
     @Query("SELECT COUNT(DISTINCT us.sticker.id) FROM UserSticker us WHERE us.usuario = :usuario AND us.sticker.album = :album")
     long countByUserAndAlbum(@Param("usuario") Usuario usuario, @Param("album") Album album);
+    @Query("SELECT us.sticker.id FROM UserSticker us WHERE us.usuario = :usuario GROUP BY us.sticker.id HAVING COUNT(us) > 1")
+    List<Long> findDuplicateStickerIdsByUsuario(@Param("usuario") Usuario usuario);
+
+    @Query("SELECT us FROM UserSticker us WHERE us.usuario = :usuario AND us.sticker.id IN :stickerIds")
+    List<UserSticker> findByUsuarioAndStickerIds(@Param("usuario") Usuario usuario, @Param("stickerIds") List<Long> stickerIds);
 
 }
