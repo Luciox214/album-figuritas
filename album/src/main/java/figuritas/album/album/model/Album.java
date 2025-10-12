@@ -1,4 +1,5 @@
 package figuritas.album.album.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import figuritas.album.sticker.model.Sticker;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

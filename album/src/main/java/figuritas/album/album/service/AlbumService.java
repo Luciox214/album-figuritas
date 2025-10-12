@@ -27,6 +27,7 @@ public class AlbumService {
     private StickerRepository stickerRepository;
 
     public Album crearAlbum(Album album) {
+        album.setTotalFiguritas(0);
         return albumRepository.save(album);
     }
 
@@ -63,17 +64,16 @@ public class AlbumService {
         }
         return userStickerRepository.findByUsuarioAndStickerIds(usuario, stickerIdDuplicados);
     }
-    public String obtenerPorcentajeAlbumCompleto(Long usuarioId, Long albumId) {
+    public double obtenerPorcentajeAlbumCompleto(Long usuarioId, Long albumId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + usuarioId));
         Album album = albumRepository.findById(albumId)
                 .orElseThrow(() -> new EntityNotFoundException("Álbum no encontrado con ID: " + albumId));
         long totalFiguritasAlbum = album.getTotalFiguritas();
         if (totalFiguritasAlbum == 0) {
-            return "0%";
+            return 0.0;
         }
         long figuritasUnicasUsuario = userStickerRepository.countByUserAndAlbum(usuario, album);
-        double porcentaje = ((double) figuritasUnicasUsuario / totalFiguritasAlbum) * 100;
-        return String.format("%.2f%%", porcentaje);
+        return ((double) figuritasUnicasUsuario / totalFiguritasAlbum) * 100;
     }
 }

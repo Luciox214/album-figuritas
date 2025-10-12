@@ -2,12 +2,12 @@ package figuritas.album.reward.service;
 import figuritas.album.album.model.Album;
 import figuritas.album.album.repository.AlbumRepository;
 import figuritas.album.reward.model.Reward;
+import figuritas.album.reward.model.Sujeto;
 import figuritas.album.reward.model.UserReward;
 import figuritas.album.reward.repository.RewardRepository;
 import figuritas.album.reward.repository.UserRewardRepository;
 import figuritas.album.reward.state.NoReclamado;
 import figuritas.album.reward.state.Reclamado;
-import figuritas.album.reward.state.RewardStateEnum;
 import figuritas.album.sticker.repository.StickerRepository;
 import figuritas.album.userSticker.repository.UserStickerRepository;
 import figuritas.album.usuario.model.Usuario;
@@ -31,6 +31,8 @@ public class RewardService {
     UserStickerRepository userStickerRepository;
     @Autowired
     RewardRepository rewardRepository;
+    @Autowired
+    NotificationService notificationService;
     public Reward crearPremio(Reward reward) {
         Long albumId = reward.getAlbum().getId();
         Album album = albumRepository.findById(albumId)
@@ -64,8 +66,23 @@ public class RewardService {
         newUserReward.setUsuario(usuario);
         newUserReward.setAlbum(album);
         newUserReward.setReward(reward);
-        newUserReward.cambiarEstado(new Reclamado());
+        newUserReward.cambiarEstado(new NoReclamado());
+        newUserReward.reclamar();
 
+        Sujeto sujeto = new Sujeto();
+        sujeto.agregarObservador(notificationService);
+        sujeto.notificarObservadores(newUserReward);
+        newUserReward.cambiarEstado(new Reclamado());
         return userRewardRepository.save(newUserReward);
+    }
+
+    public Iterable<Reward> listarPremios() {
+        return rewardRepository.findAll();
+    }
+
+    public Iterable<UserReward> listarPremiosReclamados(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + usuarioId));
+        return userRewardRepository.findByUsuario(usuario);
     }
 }

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRewardRepository extends JpaRepository<UserReward, Long> {
     boolean existsByUsuarioAndAlbum(Usuario usuario, Album album);
+
+    Iterable<UserReward> findByUsuario(Usuario usuario);
 }

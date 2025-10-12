@@ -1,6 +1,4 @@
 package figuritas.album.usuario.controller;
-
-import figuritas.album.userSticker.model.UserSticker;
 import figuritas.album.usuario.model.Usuario;
 import figuritas.album.usuario.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/usuario")
+@RequestMapping("api/v1/usuarios")
 @Tag(name = "Gestión de Usuarios", description = "Administración de usuarios y sus figuritas")
 public class UsuarioController {
 

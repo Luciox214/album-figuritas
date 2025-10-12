@@ -58,5 +58,6 @@ public class UserReward {
     public void cambiarEstado(IEstadoUserReward nuevoEstado) {
         this.estado = nuevoEstado;
         this.estadoDB = nuevoEstado.getEstadoEnum();
+
     }
 }
