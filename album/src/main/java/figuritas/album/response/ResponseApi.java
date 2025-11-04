@@ -9,6 +9,7 @@ public record ResponseApi<T>(
         return new ResponseApi<>("success", mensaje, data);
     }
 
+
     public static <T> ResponseApi<T> error(String mensaje, T data) {
         return new ResponseApi<>("error", mensaje, data);
     }
