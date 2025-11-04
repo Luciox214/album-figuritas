@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+    container_name: mi-api-java
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: sanluagusandre@gmail.com
+      SPRING_MAIL_PASSWORD: wmvevbnfojmctchh
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/album_db
+      SPRING_DATASOURCE_USERNAME: usuario_album
+      SPRING_DATASOURCE_PASSWORD: contrasenia_album
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: mi-db-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: album_db
+      MYSQL_USER: usuario_album
+      MYSQL_PASSWORD: contrasenia_album
+      MYSQL_ROOT_PASSWORD: clave_secreta_de_root
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "usuario_album", "-pcontrasenia_album"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # --- AÑADIDO ---
+    # Forzamos a MySQL a usar el plugin de autenticación antiguo
+    # que es compatible con el driver JDBC de Java.
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  db-data:
+    driver: local
+
