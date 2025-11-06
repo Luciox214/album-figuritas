@@ -1,6 +1,6 @@
 package figuritas.album.usuario.service;
-import figuritas.album.usuario.UsuarioDTO;
 import figuritas.album.usuario.model.Usuario;
+import figuritas.album.usuario.model.UsuarioDTO;
 import figuritas.album.usuario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class UsuarioService {
         return usuarioRepository.findAll()
                 .stream()
                 .map(
-                        usuario -> new UsuarioDTO(
+                        usuario -> new figuritas.album.usuario.model.UsuarioDTO(
                                 usuario.getId(),
                                 usuario.getUsername(),
                                 usuario.getNombre(),

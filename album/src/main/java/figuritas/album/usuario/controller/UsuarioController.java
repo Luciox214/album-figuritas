@@ -1,8 +1,8 @@
 package figuritas.album.usuario.controller;
 import figuritas.album.response.MessageResponse;
 import figuritas.album.response.ResponseApi;
-import figuritas.album.usuario.UsuarioDTO;
 import figuritas.album.usuario.model.Usuario;
+import figuritas.album.usuario.model.UsuarioDTO;
 import figuritas.album.usuario.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
