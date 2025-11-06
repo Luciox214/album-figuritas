@@ -7,6 +7,7 @@ import figuritas.album.album.repository.AlbumRepository;
 import figuritas.album.sticker.repository.StickerRepository;
 import figuritas.album.userSticker.repository.UserStickerRepository;
 import figuritas.album.usuario.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -22,6 +23,7 @@ public class SimulacionCompraService {
     @Autowired
     UserStickerRepository userStickerRepository;
 
+    @Transactional
     public List<UserSticker> comprarPaquete(Long userId, Long albumId) {
         Usuario usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
@@ -29,18 +31,25 @@ public class SimulacionCompraService {
                 .orElseThrow(() -> new IllegalArgumentException("Álbum no encontrado"));
 
         List<Sticker> figuritasDisponibles = stickerRepository.findByAlbumId(albumId);
+        if (figuritasDisponibles.isEmpty()) {
+            throw new IllegalStateException("No hay figuritas disponibles para este álbum");
+        }
 
         Collections.shuffle(figuritasDisponibles);
-        List<Sticker> seleccionadas = figuritasDisponibles.stream().limit(5).toList();
+        List<Sticker> seleccionadas = figuritasDisponibles.stream()
+                .limit(5)
+                .toList();
 
-        List<UserSticker> obtenidas = new ArrayList<>();
-        for (Sticker s : seleccionadas) {
-            UserSticker us = new UserSticker();
-            us.setUsuario(usuario);
-            us.setSticker(s);
-            obtenidas.add(userStickerRepository.save(us));
-        }
-        return obtenidas;
+        List<UserSticker> obtenidas = seleccionadas.stream()
+                .map(sticker -> {
+                    UserSticker us = new UserSticker();
+                    us.setUsuario(usuario);
+                    us.setSticker(sticker);
+                    return us;
+                })
+                .toList();
+
+        return userStickerRepository.saveAll(obtenidas);
     }
 
 }

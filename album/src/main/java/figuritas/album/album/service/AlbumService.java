@@ -1,5 +1,6 @@
 package figuritas.album.album.service;
 
+import figuritas.album.album.model.AlbumDTO;
 import figuritas.album.album.repository.AlbumRepository;
 import figuritas.album.reward.model.Reward;
 import figuritas.album.reward.model.UserReward;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlbumService {
@@ -61,8 +63,16 @@ public class AlbumService {
         albumRepository.deleteById(id);
     }
 
-    public List<Album> obtenerAlbums() {
-        return albumRepository.findAll();
+    public List<AlbumDTO> obtenerAlbums() {
+        return albumRepository.findAll()
+                .stream()
+                .map(
+                        album -> new AlbumDTO(
+                                album.getId(),
+                                album.getTitulo(),
+                                album.getTotalFiguritas()
+                        )
+                ).collect(Collectors.toList());
     }
 
     public List<UserSticker> obtenerFiguritasRepetidas(Long userId) {

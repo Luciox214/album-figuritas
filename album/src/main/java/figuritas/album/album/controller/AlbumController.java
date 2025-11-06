@@ -1,6 +1,7 @@
 package figuritas.album.album.controller;
 
 import figuritas.album.album.model.Album;
+import figuritas.album.album.model.AlbumDTO;
 import figuritas.album.album.service.AlbumService;
 import figuritas.album.response.MessageResponse;
 import figuritas.album.response.ResponseApi;
@@ -52,9 +53,9 @@ public class AlbumController {
     @Operation(summary = "Listar todos los álbumes", description = "Devuelve la lista completa de álbumes del sistema")
     @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente")
     @GetMapping
-    public ResponseEntity<ResponseApi<List<Album>>> listarAlbums() {
-        List<Album> albums = albumService.obtenerAlbums();
-        ResponseApi<List<Album>> response = ResponseApi.success(
+    public ResponseEntity<ResponseApi<List<AlbumDTO>>> listarAlbums() {
+        List<AlbumDTO> albums = albumService.obtenerAlbums();
+        ResponseApi<List<AlbumDTO>> response = ResponseApi.success(
                 "Listado de álbumes obtenido correctamente",
                 albums
         );
@@ -73,10 +74,10 @@ public class AlbumController {
 
     @Operation(summary = "Porcentaje de álbum completo", description = "Calcula el porcentaje de figuritas completadas en el álbum del usuario")
     @ApiResponse(responseCode = "200", description = "Porcentaje obtenido exitosamente")
-    @GetMapping("/{albumId}/porcentaje")
+    @GetMapping("/porcentaje")
     public ResponseEntity<MessageResponse> obtenerPorcentajeAlbumCompleto(
             @RequestParam Long userId,
-            @PathVariable Long albumId) {
+            @RequestParam Long albumId) {
 
         double porcentaje = albumService.obtenerPorcentajeAlbumCompleto(userId, albumId);
         return ResponseEntity
