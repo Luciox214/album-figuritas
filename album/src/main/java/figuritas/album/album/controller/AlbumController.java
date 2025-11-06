@@ -1,6 +1,7 @@
 package figuritas.album.album.controller;
 
 import figuritas.album.album.model.Album;
+import figuritas.album.album.model.AlbumDTO;
 import figuritas.album.album.service.AlbumService;
 import figuritas.album.response.MessageResponse;
 import figuritas.album.response.ResponseApi;
@@ -52,12 +53,20 @@ public class AlbumController {
     @Operation(summary = "Listar todos los álbumes", description = "Devuelve la lista completa de álbumes del sistema")
     @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente")
     @GetMapping
-    public ResponseEntity<ResponseApi<List<Album>>> listarAlbums() {
-        List<Album> albums = albumService.obtenerAlbums();
-        ResponseApi<List<Album>> response = ResponseApi.success(
+    public ResponseEntity<ResponseApi<List<AlbumDTO>>> listarAlbums() {
+        List<AlbumDTO> albums = albumService.obtenerAlbums();
+        ResponseApi<List<AlbumDTO>> response = ResponseApi.success(
                 "Listado de álbumes obtenido correctamente",
                 albums
         );
+        return ResponseEntity.ok(response);
+    }
+    @Operation(summary = "Obtener un álbum", description = "Obtiene un álbum por su ID")
+    @ApiResponse(responseCode = "200", description = "Álbum obtenido correctamente")
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseApi<Album>> obtenerAlbum(@PathVariable Long id) {
+        Album album= albumService.obtenerAlbumPorId(id);
+        ResponseApi<Album> response = ResponseApi.success("Álbum obtenido correctamente",album);
         return ResponseEntity.ok(response);
     }
 
@@ -73,42 +82,22 @@ public class AlbumController {
 
     @Operation(summary = "Porcentaje de álbum completo", description = "Calcula el porcentaje de figuritas completadas en el álbum del usuario")
     @ApiResponse(responseCode = "200", description = "Porcentaje obtenido exitosamente")
-    @GetMapping("/{albumId}/porcentaje")
+    @GetMapping("/porcentaje")
     public ResponseEntity<MessageResponse> obtenerPorcentajeAlbumCompleto(
             @RequestParam Long userId,
-            @PathVariable Long albumId) {
+            @RequestParam Long albumId) {
 
         double porcentaje = albumService.obtenerPorcentajeAlbumCompleto(userId, albumId);
         return ResponseEntity
                 .ok(MessageResponse.success("El álbum " + albumId + " del usuario " + userId + " está completo en un " + porcentaje + "%"));
     }
 
-    @Operation(summary = "Verificar y crear recompensa si el álbum está completo",
-           description = "Si el usuario completó el álbum, crea el UserReward y notifica (Observer).")
-    @ApiResponse(responseCode = "200", description = "Chequeo realizado")
-    @PostMapping("/{albumId}/check-completo")
-    public ResponseEntity<CheckCompletoResponse> verificarYCrearReward(
-            @RequestParam Long userId,
-            @PathVariable Long albumId) {
-
-        boolean creado = albumService.verificarYCrearRewardSiCorresponde(userId, albumId);
-        String mensaje = creado
-            ? "🎉 Álbum completo: recompensa creada y notificada."
-            : "Álbum aún no completo. No se creó recompensa.";
-
-        return ResponseEntity.ok(new CheckCompletoResponse(albumId, userId, creado, mensaje));  
-    }
-
-/** DTO para la respuesta del check */
-public record CheckCompletoResponse(Long albumId, Long userId, boolean recompensaCreada, String mensaje) {}
-
-
     @Operation(summary = "Obtener figuritas faltantes del usuario", description = "Devuelve la lista de figuritas que le faltan al usuario para completar el álbum")
     @ApiResponse(responseCode = "200", description = "Figuritas faltantes obtenidas correctamente")
-    @GetMapping("/{albumId}/faltantes")
+    @GetMapping("/faltantes")
     public ResponseEntity<ResponseApi<List<Sticker>>> obtenerFiguritasFaltantes(
             @RequestParam Long userId,
-            @PathVariable Long albumId) {
+            @RequestParam Long albumId) {
         List<Sticker> faltantes = albumService.obtenerFiguritasFaltantes(userId, albumId);
         ResponseApi<List<Sticker>> response = ResponseApi.success("Figuritas faltantes obtenidas correctamente", faltantes);
 
