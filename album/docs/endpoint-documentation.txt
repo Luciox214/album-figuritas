@@ -1,0 +1,88 @@
+# Album Figuritas – Documentación de Endpoints
+
+## Estado general
+- **Implementado**: expone lógica funcional en los controladores existentes.
+- **Alias implementado**: reutiliza lógica existente pero ofrece otra ruta REST.
+- **Placeholder**: endpoint declarado sólo para documentar el contrato; hoy responde 501 (Not Implemented).
+
+---
+## Autenticación y Perfil (placeholders)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| POST | /api/v1/auth/register | Alta de un nuevo usuario autenticado. | Placeholder |
+| POST | /api/v1/auth/login | Inicio de sesión y obtención de token. | Placeholder |
+| GET | /api/v1/users/me | Devuelve el perfil del usuario autenticado. | Placeholder |
+| PUT | /api/v1/users/me | Actualiza datos del usuario autenticado (excepto username). | Placeholder |
+
+---
+## Gestión de Usuarios (implementado)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| POST | /api/v1/usuarios | Crea un usuario administrado (modelo actual). | Implementado |
+| GET | /api/v1/usuarios | Lista usuarios registrados. | Implementado |
+| DELETE | /api/v1/usuarios/{id} | Elimina un usuario por ID. | Implementado |
+
+---
+## Álbunes (Admin)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| POST | /api/v1/albums | Crea un nuevo álbum. | Implementado |
+| POST | /api/v1/albums/{id}/stickers | Agrega figuritas a un álbum (bulk). | Implementado |
+| DELETE | /api/v1/albums/{id} | Elimina un álbum. | Implementado |
+| POST | /api/v1/albums/{albumId}/publish | Marca un álbum como publicado. | Placeholder |
+| GET | /api/v1/albums | Lista álbumes; admite query params `categoria`, `creador`, `dificultad` (pendiente aplicar filtros). | Implementado |
+| GET | /api/v1/albums/{id} | Obtiene los datos de un álbum. | Implementado |
+| GET | /api/v1/albums/{albumId}/stickers | Devuelve metadatos de figuritas del álbum publicado. | Placeholder |
+| POST | /api/v1/albums/{albumId}/claim-reward | Alias REST para reclamar el premio de un álbum. | Alias implementado |
+
+---
+## Catálogo / Tienda (placeholders)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| POST | /api/v1/shop/albums/{albumId}/packs | Compra de pack (genera 5 figuritas). | Placeholder |
+
+---
+## Colección de Usuario (implementado)
+Todas las rutas requieren `usuarioId` y `albumId` en la ruta.
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| GET | /api/v1/users/{usuarioId}/albums/{albumId}/collection/progress | Métricas de progreso del álbum. | Implementado |
+| GET | /api/v1/users/{usuarioId}/albums/{albumId}/collection/missing | Figuritas faltantes. | Implementado |
+| GET | /api/v1/users/{usuarioId}/albums/{albumId}/collection/duplicates | Figuritas duplicadas (estado EN_COLECCION). | Implementado |
+| GET | /api/v1/users/{usuarioId}/albums/{albumId}/collection/rarity | Colección agrupada por rareza. | Implementado |
+| GET | /api/v1/me/collection?albumId= | Colección del usuario autenticado (versión futura). | Placeholder |
+| GET | /api/v1/me/missing?albumId= | Figuritas faltantes del usuario autenticado. | Placeholder |
+| GET | /api/v1/me/duplicates?albumId= | Figuritas duplicadas del usuario autenticado. | Placeholder |
+
+---
+## Premios (colección & premios)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| POST | /api/v1/premios | Crea el premio asociado a un álbum (admin). | Implementado |
+| POST | /api/v1/premios/reclamar?usuarioId=&albumId= | Reclama el premio para un usuario. | Implementado |
+| GET | /api/v1/premios | Lista premios disponibles. | Implementado |
+| GET | /api/v1/premios/usuario/{usuarioId} | Lista premios reclamados por usuario (DTO). | Implementado |
+| POST | /api/v1/albums/{albumId}/claim-reward | Alias REST para reclamar premio desde álbum. | Alias implementado |
+
+---
+## Trades (placeholders)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| POST | /api/v1/trades | Crea un intercambio. | Placeholder |
+| POST | /api/v1/trades/{tradeId}/offer | Agrega oferta a intercambio. | Placeholder |
+| POST | /api/v1/trades/{tradeId}/accept | Acepta un intercambio. | Placeholder |
+| POST | /api/v1/trades/{tradeId}/reject | Rechaza un intercambio. | Placeholder |
+| POST | /api/v1/trades/{tradeId}/cancel | Cancela un intercambio. | Placeholder |
+
+---
+## Reportes (solo lectura – placeholders)
+| Método | Ruta | Descripción | Estado |
+| ------ | ---- | ----------- | ------ |
+| GET | /api/v1/reports/top-albums | Ranking de álbumes más populares. | Placeholder |
+| GET | /api/v1/reports/rare-stickers | Figuritas raras destacadas. | Placeholder |
+
+---
+## Notas para integración futura
+- Los endpoints "placeholder" devuelven `501 Not Implemented`, útil para mockear contratos en Swagger y en la documentación.
+- Los alias implementados (por ejemplo, `POST /api/v1/albums/{albumId}/claim-reward`) reutilizan la lógica real de `RewardService` y retornan `ResponseApi` consistente con el estándar del proyecto.
+- Cuando se implementen los flujos definitivos, reemplazar la respuesta `ResponseApi.error(..., 501)` por la lógica y documentación real (incluyendo DTOs específicos y códigos de éxito/errores finales).

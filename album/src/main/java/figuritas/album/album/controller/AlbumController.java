@@ -49,10 +49,13 @@ public class AlbumController {
         return ResponseEntity.ok(MessageResponse.success("Álbum eliminado correctamente con ID: " + id));
     }
 
-    @Operation(summary = "Listar todos los álbumes", description = "Devuelve la lista completa de álbumes del sistema")
+    @Operation(summary = "Listar todos los álbumes", description = "Devuelve la lista completa de álbumes del sistema, permitiendo filtrar por categoría, creador o dificultad")
     @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente")
     @GetMapping
-    public ResponseEntity<ResponseApi<List<AlbumDTO>>> listarAlbums() {
+    public ResponseEntity<ResponseApi<List<AlbumDTO>>> listarAlbums(
+        @RequestParam(required = false) String categoria,
+        @RequestParam(required = false) String creador,
+        @RequestParam(required = false) String dificultad) {
         List<AlbumDTO> albums = albumService.obtenerAlbums();
         ResponseApi<List<AlbumDTO>> response = ResponseApi.success(
                 "Listado de álbumes obtenido correctamente",
