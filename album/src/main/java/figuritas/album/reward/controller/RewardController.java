@@ -4,8 +4,12 @@ import figuritas.album.response.ResponseApi;
 import figuritas.album.reward.model.Reward;
 import figuritas.album.reward.model.RewardDTO;
 import figuritas.album.reward.model.UserReward;
+import figuritas.album.reward.model.UserRewardDTO;
+import figuritas.album.reward.model.UserRewardListResponse;
 import figuritas.album.reward.service.RewardService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +61,15 @@ public class RewardController {
     }
 
     @Operation(summary = "Listar premios reclamados de un usuario", description = "Devuelve todos los premios que un usuario ha reclamado")
-    @ApiResponse(responseCode = "200", description = "Premios reclamados obtenidos correctamente")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Premios reclamados obtenidos correctamente",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserRewardListResponse.class))
+    )
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<ResponseApi<Iterable<UserReward>>> listarPremiosReclamados(@PathVariable Long usuarioId) {
-        Iterable<UserReward> premiosReclamados = rewardService.listarPremiosReclamados(usuarioId);
-        ResponseApi<Iterable<UserReward>> response = ResponseApi.success(
+    public ResponseEntity<ResponseApi<Iterable<UserRewardDTO>>> listarPremiosReclamados(@PathVariable Long usuarioId) {
+        Iterable<UserRewardDTO> premiosReclamados = rewardService.listarPremiosReclamados(usuarioId);
+        ResponseApi<Iterable<UserRewardDTO>> response = ResponseApi.success(
                 "Listado de premios reclamados obtenido correctamente",
                 premiosReclamados
         );

@@ -4,6 +4,7 @@ import figuritas.album.album.model.Album;
 import figuritas.album.album.repository.AlbumRepository;
 import figuritas.album.reward.model.Reward;
 import figuritas.album.reward.model.UserReward;
+import figuritas.album.reward.model.UserRewardDTO;
 import figuritas.album.reward.repository.RewardRepository;
 import figuritas.album.reward.repository.UserRewardRepository;
 import figuritas.album.reward.state.Reclamado;
@@ -20,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +74,35 @@ class RewardServiceTest {
         reward.setId(3L);
         reward.setAlbum(album);
         reward.setTipo("SKIN");
+    }
+
+    @Test
+    void listarPremiosReclamados_mapearDTO() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+
+        reward.setAlbum(album);
+
+        UserReward userReward = new UserReward();
+        userReward.setId(10L);
+        userReward.setUsuario(usuario);
+        userReward.setAlbum(album);
+        userReward.setReward(reward);
+        userReward.setEstadoDB(RewardStateEnum.RECLAMADO);
+        userReward.setClaimedAt(LocalDateTime.now());
+
+        when(userRewardRepository.findByUsuario(usuario)).thenReturn(List.of(userReward));
+
+        Iterable<UserRewardDTO> resultado = rewardService.listarPremiosReclamados(1L);
+
+        assertThat(resultado).hasSize(1);
+        UserRewardDTO dto = resultado.iterator().next();
+        assertEquals(userReward.getId(), dto.id());
+        assertEquals(reward.getId(), dto.rewardId());
+        assertEquals(reward.getTipo(), dto.rewardTipo());
+        assertEquals(album.getId(), dto.albumId());
+        assertEquals(album.getTitulo(), dto.albumTitulo());
+        assertEquals(RewardStateEnum.RECLAMADO, dto.estado());
+        assertThat(dto.claimedAt()).isNotNull();
     }
 
     @Test
