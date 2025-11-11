@@ -5,6 +5,7 @@ import figuritas.album.reward.model.Reward;
 import figuritas.album.reward.model.RewardDTO;
 import figuritas.album.reward.model.Sujeto;
 import figuritas.album.reward.model.UserReward;
+import figuritas.album.reward.model.UserRewardDTO;
 import figuritas.album.reward.repository.RewardRepository;
 import figuritas.album.reward.repository.UserRewardRepository;
 import figuritas.album.reward.state.NoReclamado;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class RewardService {
@@ -108,9 +110,21 @@ public class RewardService {
                 )).collect(Collectors.toList());
     }
 
-    public Iterable<UserReward> listarPremiosReclamados(Long usuarioId) {
+    public Iterable<UserRewardDTO> listarPremiosReclamados(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(Objects.requireNonNull(usuarioId, "usuarioId no puede ser nulo"))
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + usuarioId));
-        return userRewardRepository.findByUsuario(usuario);
+    Iterable<UserReward> rewards = userRewardRepository.findByUsuario(usuario);
+
+    return StreamSupport.stream(rewards.spliterator(), false)
+                .map(userReward -> new UserRewardDTO(
+                        userReward.getId(),
+                        userReward.getReward().getId(),
+                        userReward.getReward().getTipo(),
+                        userReward.getAlbum().getId(),
+                        userReward.getAlbum().getTitulo(),
+                        userReward.getEstadoDB(),
+                        userReward.getClaimedAt()
+                ))
+                .collect(Collectors.toList());
     }
 }

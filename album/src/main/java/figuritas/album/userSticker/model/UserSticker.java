@@ -32,11 +32,11 @@ public class UserSticker {
     private Sticker sticker;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false, columnDefinition = "varchar(255) default 'EN_COLECCION'")
+    @Column(name = "estado", nullable = false)
     private UserStickerEstado estado;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "timestamp with time zone default CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     @PrePersist
